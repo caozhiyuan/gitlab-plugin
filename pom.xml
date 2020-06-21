@@ -9,14 +9,14 @@
   <properties>
     <java.level>8</java.level>
     <jenkins.version>2.190.1</jenkins.version>
-    <spotbugs.failOnError >false</spotbugs.failOnError>
+    <spotbugs.failOnError>false</spotbugs.failOnError>
     <configuration-as-code-plugin.version>1.36</configuration-as-code-plugin.version>
     <hpi.compatibleSinceVersion>1.4.0</hpi.compatibleSinceVersion>
     <jackson.version>2.11.0</jackson.version>
   </properties>
 
   <artifactId>gitlab-plugin</artifactId>
-  <version>1.5.17-SNAPSHOT</version>
+  <version>1.5.17</version>
   <name>GitLab Plugin</name>
   <url>https://wiki.jenkins-ci.org/display/JENKINS/GitLab+Plugin</url>
   <packaging>hpi</packaging>
@@ -53,7 +53,7 @@
     <connection>scm:git:ssh://github.com:jenkinsci/gitlab-plugin.git</connection>
     <developerConnection>scm:git:git@github.com:jenkinsci/gitlab-plugin.git</developerConnection>
     <url>https://github.com/jenkinsci/gitlab-plugin</url>
-    <tag>HEAD</tag>
+    <tag>gitlab-plugin-1.5.17</tag>
   </scm>
   <!-- get every artifact through repo.jenkins-ci.org, which proxies all the artifacts that we need -->
   <repositories>
@@ -225,6 +225,12 @@
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-client</artifactId>
       <version>3.0.16.Final</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.httpcomponents</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.jaxrs</groupId>
@@ -241,7 +247,12 @@
       <artifactId>apache-httpcomponents-client-4-api</artifactId>
       <version>4.5.10-2.0</version>
     </dependency>
-
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+      <version>4.5.10</version>
+    </dependency>
+    
     <!-- util dependencies -->
     <dependency>
       <groupId>com.google.guava</groupId>
