@@ -302,7 +302,7 @@ final class AutodetectingGitLabClient implements GitLabClient {
     }
 
     private GitLabClient autodetectOrDie() {
-        GitLabClient client = autodetect();
+        GitLabClient client = autodetect(null);
         if (client != null) {
             return client;
         }
@@ -310,8 +310,13 @@ final class AutodetectingGitLabClient implements GitLabClient {
         throw new NoSuchElementException("no client-builder found that supports server at " + url);
     }
 
-    private GitLabClient autodetect() {
+    private GitLabClient autodetect(Class clazz) {
         for (GitLabClientBuilder candidate : builders) {
+            if (clazz != null) {
+                if (!candidate.getClass().isInstance(clazz)) {
+                    continue;
+                }
+            }
             GitLabClient client = candidate.buildClient(url, token, ignoreCertificateErrors, connectionTimeout, readTimeout);
             try {
                 client.getCurrentUser();
@@ -333,28 +338,13 @@ final class AutodetectingGitLabClient implements GitLabClient {
             return operation.execute(false);
         } catch (Exception ex) {
             if ("HTTP 403 Forbidden".equals(ex.getMessage())) {
-                GitLabClient client = getGitLabV3Client();
+                GitLabClient client = autodetect(V3GitLabClientBuilder.class);
                 if (client != null) {
                     return operation.execute(client);
                 }
             }
             throw ex;
         }
-    }
-
-    private GitLabClient getGitLabV3Client() {
-        GitLabClient client = null;
-        for (GitLabClientBuilder candidate : builders) {
-            if (candidate instanceof V3GitLabClientBuilder) {
-                client = candidate.buildClient(url, token, ignoreCertificateErrors, connectionTimeout, readTimeout);
-                try {
-                    client.getCurrentUser();
-                } catch (NotFoundException ignored) {
-                    // api-endpoint not found (== api-level not supported by this client)
-                }
-            }
-        }
-        return client;
     }
 
     private abstract class GitLabOperation<R> {
